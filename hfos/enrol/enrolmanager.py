@@ -37,15 +37,17 @@ from captcha.image import ImageCaptcha
 from validate_email import validate_email
 from circuits import Timer, Event, Worker, task
 
-from hfos.component import ConfigurableComponent, handler
-from hfos.events.system import authorizedevent, anonymousevent
-from hfos.events.client import send
-from hfos.database import objectmodels
-from hfos.logger import warn, debug, verbose, error, hilight, hfoslog
-from hfos.misc import std_uuid, std_now, std_hash, std_salt, i18n as _, std_human_uid
+from isomer.component import ConfigurableComponent, handler
+from isomer.events.system import authorized_event, anonymous_event
+from isomer.events.client import send
+from isomer.database import objectmodels
+from isomer.logger import warn, debug, verbose, error, hilight, isolog
+from isomer.misc import std_uuid, std_now, std_hash, std_salt, i18n as _, std_human_uid
 from pystache import render
 from email.mime.text import MIMEText
 from smtplib import SMTP, SMTP_SSL
+
+from isomer.mail import send_mail
 
 
 # from hfos.database import objectmodels
@@ -53,51 +55,51 @@ from smtplib import SMTP, SMTP_SSL
 # from hfos.events.system import updatesubscriptions, send
 
 
-class change(authorizedevent):
+class change(authorized_event):
     roles = ['admin']
 
 
-class invite(authorizedevent):
+class invite(authorized_event):
     roles = ['admin']
 
 
-class delete(authorizedevent):
+class delete(authorized_event):
     roles = ['admin']
 
 
-class addrole(authorizedevent):
+class addrole(authorized_event):
     roles = ['admin']
 
 
-class delrole(authorizedevent):
+class delrole(authorized_event):
     roles = ['admin']
 
 
-class toggle(authorizedevent):
+class toggle(authorized_event):
     roles = ['admin']
 
 
-class changepassword(authorizedevent):
+class changepassword(authorized_event):
     pass
 
 
-class accept(anonymousevent):
+class accept(anonymous_event):
     pass
 
 
-class enrol(anonymousevent):
+class enrol(anonymous_event):
     pass
 
 
-class captcha(anonymousevent):
+class captcha(anonymous_event):
     pass
 
 
-class status(anonymousevent):
+class status(anonymous_event):
     pass
 
 
-class request_reset(anonymousevent):
+class request_reset(anonymous_event):
     pass
 
 
@@ -106,7 +108,7 @@ class EnrolManager(ConfigurableComponent):
     The Enrol-EnrolManager handles enrollment requests, invitations and user
     verification.
     """
-    channel = "hfosweb"
+    channel = 'isomer-web'
 
     configprops = {
         'mail_send': {
@@ -764,6 +766,10 @@ the friendly robot of {{node_name}}
 
         mail = render(template, context)
         self.log('Mail:', mail, lvl=verbose)
+
+        self.fireEvent(send_mail(enrollment.email, render(subject, context), mail))
+
+        return
         mime_mail = MIMEText(mail)
         mime_mail['Subject'] = render(subject, context)
         mime_mail['From'] = render(self.config.mail_from, {'hostname': self.hostname})

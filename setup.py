@@ -45,9 +45,9 @@ This software package is a plugin module for HFOS.
           'captcha>=0.2.4',
           'validate_email>=1.3'
       ],
-      entry_points="""[hfos.components]
+      entry_points="""[isomer.components]
     enrol=hfos.enrol.enrolmanager:EnrolManager
-    [hfos.schemata]
+    [isomer.schemata]
     enrollment=hfos.enrol.enrollment:Enrollment
     """,
       test_suite="tests.main.main",
