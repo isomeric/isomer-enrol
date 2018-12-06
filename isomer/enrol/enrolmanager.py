@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-# HFOS - Hackerfleet Operating System
-# ===================================
+# Isomer - The distributed application framework
+# ==============================================
 # Copyright (C) 2011-2018 Heiko 'riot' Weinen <riot@c-base.org> and others.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ from base64 import b64encode
 from time import time
 from captcha.image import ImageCaptcha
 from validate_email import validate_email
-from circuits import Timer, Event, Worker, task
+from circuits import Timer, Event
 
 from isomer.component import ConfigurableComponent, handler
 from isomer.events.system import authorized_event, anonymous_event
@@ -48,11 +48,6 @@ from email.mime.text import MIMEText
 from smtplib import SMTP, SMTP_SSL
 
 from isomer.mail import send_mail
-
-
-# from hfos.database import objectmodels
-# from datetime import datetime
-# from hfos.events.system import updatesubscriptions, send
 
 
 class change(authorized_event):
@@ -214,7 +209,7 @@ class EnrolManager(ConfigurableComponent):
             },
             'default': '''Hello {{name}}!
             
-You are being invited to join the HFOS crew at {{node_name}}!
+You are being invited to join the crew at {{node_name}}!
 Click this link to join the crew: 
 {{invitation_url}}{{uuid}}
 
@@ -236,7 +231,7 @@ the friendly robot of {{node_name}}
                 'type': 'textarea'
             },
             'default': '''Hello {{name}}!
-You can now use the HFOS node at {{node_name}}!
+You can now use the Isomer node at {{node_name}}!
 Click this link to login: 
 {{node_url}}
 
@@ -254,8 +249,6 @@ the friendly robot of {{node_name}}
         """
 
         super(EnrolManager, self).__init__("ENROL", *args, **kwargs)
-
-        self.worker = Worker(process=False, workers=2, channel="enrolworkers").register(self)
 
         self.log("Started")
         self._setup()
@@ -298,7 +291,7 @@ the friendly robot of {{node_name}}
     def _fail(self, event, msg="Error"):
         self.log('Sending failure feedback to', event.client.uuid, lvl=debug)
         fail_msg = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': event.action,
             'data': (False, msg)
         }
@@ -307,7 +300,7 @@ the friendly robot of {{node_name}}
     def _acknowledge(self, event, msg="Done"):
         self.log('Sending success feedback to', event.client.uuid, lvl=debug)
         success_msg = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': event.action,
             'data': (True, msg)
         }
@@ -347,7 +340,7 @@ the friendly robot of {{node_name}}
             self._send_acceptance(enrollment, None, event)
 
         packet = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': 'change',
             'data': reply
         }
@@ -371,7 +364,7 @@ the friendly robot of {{node_name}}
             user.save()
 
             packet = {
-                'component': 'hfos.enrol.enrolmanager',
+                'component': 'isomer.enrol.enrolmanager',
                 'action': 'changepassword',
                 'data': True
             }
@@ -379,7 +372,7 @@ the friendly robot of {{node_name}}
             self.log('Successfully changed password for user', uuid)
         else:
             packet = {
-                'component': 'hfos.enrol.enrolmanager',
+                'component': 'isomer.enrol.enrolmanager',
                 'action': 'changepassword',
                 'data': False
             }
@@ -503,7 +496,7 @@ the friendly robot of {{node_name}}
                     self._fail(event)
                     return
                 packet = {
-                    'component': 'hfos.enrol.enrolmanager',
+                    'component': 'isomer.enrol.enrolmanager',
                     'action': 'accept',
                     'data': {True: data}
                 }
@@ -522,7 +515,7 @@ the friendly robot of {{node_name}}
         self.log('Registration status requested')
 
         response = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': 'status',
             'data': self.config.allow_registration
         }
@@ -644,7 +637,7 @@ the friendly robot of {{node_name}}
         self.log('Transmitting captcha')
 
         response = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': 'captcha',
             'data': b64encode(captcha['image'].getvalue()).decode('utf-8')
         }
@@ -670,7 +663,7 @@ the friendly robot of {{node_name}}
         self._send_invitation(enrollment, event)
 
         packet = {
-            'component': 'hfos.enrol.enrolmanager',
+            'component': 'isomer.enrol.enrolmanager',
             'action': 'invite',
             'data': [True, email]
         }
@@ -721,7 +714,7 @@ the friendly robot of {{node_name}}
             newprofile.save()
 
             packet = {
-                'component': 'hfos.enrol.enrolmanager',
+                'component': 'isomer.enrol.enrolmanager',
                 'action': 'enrol',
                 'data': [True, mail]
             }
@@ -768,60 +761,3 @@ the friendly robot of {{node_name}}
         self.log('Mail:', mail, lvl=verbose)
 
         self.fireEvent(send_mail(enrollment.email, render(subject, context), mail))
-
-        return
-        mime_mail = MIMEText(mail)
-        mime_mail['Subject'] = render(subject, context)
-        mime_mail['From'] = render(self.config.mail_from, {'hostname': self.hostname})
-        mime_mail['To'] = enrollment.email
-
-        self.log('MimeMail:', mime_mail, lvl=verbose)
-        if self.config.mail_send is True:
-            self.log('Sending mail to', enrollment.email)
-
-            self.fireEvent(task(send_mail_worker, self.config, mime_mail, event), "enrolworkers")
-        else:
-            self.log('Not sending mail, here it is for debugging info:', mail, pretty=True)
-
-    @handler('task_success', channel="enrolworkers")
-    def task_success(self, event, call, result):
-        success, log, originating_event = result
-
-        if success is True:
-            self.log('Sent mail successfully.')
-        else:
-            self.log('Sending mail failed:', event, call, log, lvl=error)
-            self._fail(originating_event,
-                       _('Sorry, sending that email apparently failed. Please contact a node maintainer.'))
-
-
-def send_mail_worker(config, mail, event):
-    """Worker task to send out an email, which blocks the process unless it is threaded"""
-    log = ""
-
-    try:
-        if config.mail_ssl:
-            server = SMTP_SSL(config.mail_server, port=config.mail_server_port, timeout=30)
-        else:
-            server = SMTP(config.mail_server, port=config.mail_server_port, timeout=30)
-
-        if config.mail_tls:
-            log += 'Starting TLS\n'
-            server.starttls()
-
-        if config.mail_username != '':
-            log += 'Logging in with ' + str(config.mail_username) + "\n"
-            server.login(config.mail_username, config.mail_password)
-        else:
-            log += 'No username, trying anonymous access\n'
-
-        log += 'Sending Mail\n'
-        response_send = server.send_message(mail)
-        server.quit()
-
-    except timeout as e:
-        log += 'Could not send email to enrollee, mailserver timeout: ' + str(e) + "\n"
-        return False, log, event
-
-    log += 'Server response:' + str(response_send)
-    return True, log, event

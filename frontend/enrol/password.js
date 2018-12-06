@@ -3,7 +3,7 @@
  * # -*- coding: UTF-8 -*-
  *
  * __license__ = """
- * Hackerfleet Operating System
+ * Isomer Application Framework
  * ============================
  * Copyright (C) 2011- 2018 riot <riot@c-base.org> and others.
  *
@@ -26,10 +26,10 @@
 
 /**
  * @ngdoc function
- * @name hfosFrontendApp.controller:PasswordChangeCtrl
+ * @name isomerFrontendApp.controller:PasswordChangeCtrl
  * @description
  * # PasswordChangeCtrl
- * Controller of the hfosFrontendApp
+ * Controller of the isomerFrontendApp
  */
 class PasswordChange {
 
@@ -46,7 +46,7 @@ class PasswordChange {
 
         let self = this;
 
-        this.socket.listen('hfos.enrol.enrolmanager', function(msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function(msg) {
             console.log('[PASSWORD]', msg);
             if (msg.action === 'changepassword') {
                 if (msg.data === true) {
@@ -75,7 +75,7 @@ class PasswordChange {
         }
         console.log('Transmitting password change request');
         let packet = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'changepassword',
             data: {
                 'old': old,

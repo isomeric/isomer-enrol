@@ -3,7 +3,7 @@
  * # -*- coding: UTF-8 -*-
  *
  * __license__ = """
- * Hackerfleet Operating System
+ * Isomer Application Framework
  * ============================
  * Copyright (C) 2011- 2018 riot <riot@c-base.org> and others.
  *
@@ -26,10 +26,10 @@
 
 /**
  * @ngdoc function
- * @name hfosFrontendApp.controller:PasswordChangeCtrl
+ * @name isomerFrontendApp.controller:PasswordChangeCtrl
  * @description
  * # PasswordChangeCtrl
- * Controller of the hfosFrontendApp
+ * Controller of the isomerFrontendApp
  */
 class Enrol {
 
@@ -60,7 +60,7 @@ class Enrol {
 
         let self = this;
 
-        this.socket.listen('hfos.enrol.enrolmanager', function (msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function (msg) {
             if (msg.action === 'captcha') {
                 console.log('[ENROL] Got captcha:', msg);
                 self.captcha_image = msg.data;
@@ -101,7 +101,7 @@ class Enrol {
         this.captcha_image = null;
 
         this.socket.send({
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'captcha'
         });
     }
@@ -110,7 +110,7 @@ class Enrol {
         console.log('[ENROL] Getting registration open status');
 
         this.socket.send({
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'status'
         });
     }
@@ -122,7 +122,7 @@ class Enrol {
         }
         console.log('Transmitting account enrolment request');
         let packet = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'enrol',
             data: {
                 username: this.username,

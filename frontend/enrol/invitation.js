@@ -3,7 +3,7 @@
  * # -*- coding: UTF-8 -*-
  *
  * __license__ = """
- * Hackerfleet Operating System
+ * Isomer Application Framework
  * ============================
  * Copyright (C) 2011- 2018 riot <riot@c-base.org> and others.
  *
@@ -26,10 +26,10 @@
 
 /**
  * @ngdoc function
- * @name hfosFrontendApp.controller:AcceptCtrl
+ * @name isomerFrontendApp.controller:AcceptCtrl
  * @description
  * # AcceptCtrl
- * Controller of the hfosFrontendApp
+ * Controller of the isomerFrontendApp
  */
 class Accept {
     
@@ -54,7 +54,7 @@ class Accept {
         console.log('[INVITATION] UUID:', this.uuid);
         
         let packet = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'accept',
             data: this.uuid
         };
@@ -64,7 +64,7 @@ class Accept {
                 self.socket.send(packet);
             }, 3000);
         });
-        this.socket.listen('hfos.enrol.enrolmanager', function(msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function(msg) {
             console.log('Message!', msg);
             if (msg.action === 'accept') {
                 let data = msg.data[true];

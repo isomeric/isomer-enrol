@@ -3,7 +3,7 @@
  * # -*- coding: UTF-8 -*-
  *
  * __license__ = """
- * Hackerfleet Operating System
+ * Isomer Application Framework
  * ============================
  * Copyright (C) 2011- 2018 riot <riot@c-base.org> and others.
  *
@@ -28,10 +28,10 @@ import deletionWarning from './modals/deletionWarning.tpl.html';
 
 /**
  * @ngdoc function
- * @name hfosFrontendApp.controller:EnrolCtrl
+ * @name isomerFrontendApp.controller:EnrolCtrl
  * @description
  * # EnrolCtrl
- * Controller of the hfosFrontendApp
+ * Controller of the isomerFrontendApp
  */
 class Enrol {
 
@@ -72,7 +72,7 @@ class Enrol {
 
         this.getter_timeout = null;
 
-        this.socket.listen('hfos.enrol.enrolmanager', function (msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function (msg) {
             console.log('[ENROL] Message received');
             if (msg.action === 'invite') {
                 let result = msg.data[true];
@@ -193,7 +193,7 @@ class Enrol {
             this.op.deleteObject('enrollment', uuid);
         } else {
             let request = {
-                component: 'hfos.enrol.enrolmanager',
+                component: 'isomer.enrol.enrolmanager',
                 action: 'change',
                 data: {
                     uuid: uuid,
@@ -208,7 +208,7 @@ class Enrol {
         for (let item of this.invitations) {
             console.log('[ENROL] Inviting user:', item);
             let request = {
-                component: 'hfos.enrol.enrolmanager',
+                component: 'isomer.enrol.enrolmanager',
                 action: 'invite',
                 data: {
                     name: item.name,
@@ -293,7 +293,7 @@ class Enrol {
         for (let uuid of this.deletion_candidates) {
             console.log('Deleting user ', uuid);
             let request = {
-                component: 'hfos.enrol.enrolmanager',
+                component: 'isomer.enrol.enrolmanager',
                 action: 'delete',
                 data: uuid
             };
@@ -310,7 +310,7 @@ class Enrol {
     toggle_user(uuid, status) {
         console.log('Toggling user activation', uuid);
         let request = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'toggle',
             data: {
                 uuid: uuid,
@@ -323,7 +323,7 @@ class Enrol {
     add_role(role, uuid) {
         console.log('Adding role to user', role, uuid);
         let request = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'addrole',
             data: {
                 uuid: uuid,
@@ -336,7 +336,7 @@ class Enrol {
     remove_role(role, uuid) {
         console.log('Removing role from user', role, uuid);
         let request = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'delrole',
             data: {
                 uuid: uuid,

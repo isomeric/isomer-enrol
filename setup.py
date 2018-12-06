@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-# HFOS - Hackerfleet Operating System
-# ===================================
+# Isomer - The distributed application framework
+# ==============================================
 # Copyright (C) 2011-2018 Heiko 'riot' Weinen <riot@c-base.org> and others.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,32 +23,32 @@ __license__ = "AGPLv3"
 
 from setuptools import setup, find_packages
 
-setup(name="hfos-enrol",
+setup(name="isomer-enrol",
       version="0.0.3",
-      description="hfos-enrol",
-      author="Hackerfleet Community",
+      description="isomer-enrol",
+      author="Isomer Community",
       author_email="riot@c-base.org",
-      url="https://github.com/hackerfleet/hfos-enrol",
+      url="https://github.com/isomeric/isomer-enrol",
       license="GNU Affero General Public License v3",
       packages=find_packages(),
-      long_description="""HFOS - Enrol
+      long_description="""ISOMER - Enrol
 ============
 
 A module to manage user invitations and registrations
 
-This software package is a plugin module for HFOS.
+This software package is a plugin module for ISOMER.
 """,
       dependency_links=[
       ],
       install_requires=[
-          'hfos>=1.2.0',
+          'isomer>=1.2.0',
           'captcha>=0.2.4',
           'validate_email>=1.3'
       ],
       entry_points="""[isomer.components]
-    enrol=hfos.enrol.enrolmanager:EnrolManager
+    enrol=isomer.enrol.enrolmanager:EnrolManager
     [isomer.schemata]
-    enrollment=hfos.enrol.enrollment:Enrollment
+    enrollment=isomer.enrol.enrollment:Enrollment
     """,
       test_suite="tests.main.main",
       )

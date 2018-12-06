@@ -3,7 +3,7 @@
  * # -*- coding: UTF-8 -*-
  *
  * __license__ = """
- * Hackerfleet Operating System
+ * Isomer Application Framework
  * ============================
  * Copyright (C) 2011- 2018 riot <riot@c-base.org> and others.
  *
@@ -26,10 +26,10 @@
 
 /**
  * @ngdoc function
- * @name hfosFrontendApp.controller:AccountResetCtrl
+ * @name isomerFrontendApp.controller:AccountResetCtrl
  * @description
  * # AccountResetCtrl
- * Controller of the hfosFrontendApp
+ * Controller of the isomerFrontendApp
  */
 class AccountReset {
 
@@ -46,7 +46,7 @@ class AccountReset {
         console.log('Transmitting reset request');
         
         let packet = {
-            component: 'hfos.enrol.enrolmanager',
+            component: 'isomer.enrol.enrolmanager',
             action: 'request_reset',
             data: {
                 'username': this.username,
