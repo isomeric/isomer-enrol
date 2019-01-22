@@ -41,7 +41,7 @@ This software package is a plugin module for ISOMER.
       dependency_links=[
       ],
       install_requires=[
-          'isomer>=1.2.0',
+          'isomer>=1.0.0',
           'captcha>=0.2.4',
           'validate_email>=1.3'
       ],
