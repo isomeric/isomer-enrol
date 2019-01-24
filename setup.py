@@ -23,32 +23,34 @@ __license__ = "AGPLv3"
 
 from setuptools import setup, find_packages
 
-setup(name="isomer-enrol",
-      version="0.0.3",
-      description="isomer-enrol",
-      author="Isomer Community",
-      author_email="riot@c-base.org",
-      url="https://github.com/isomeric/isomer-enrol",
-      license="GNU Affero General Public License v3",
-      packages=find_packages(),
-      long_description="""ISOMER - Enrol
-============
+setup(
+    name="isomer-enrol",
+    version="0.0.3",
+    description="isomer-enrol",
+    author="Isomer Community",
+    author_email="riot@c-base.org",
+    url="https://github.com/isomeric/isomer-enrol",
+    license="GNU Affero General Public License v3",
+    packages=find_packages(),
+    long_description="""Isomer - Enrol
+==============
 
-A module to manage user invitations and registrations
+User invitation, registration and password reset system.
 
-This software package is a plugin module for ISOMER.
+This software package is a plugin module for Isomer.
 """,
-      dependency_links=[
-      ],
-      install_requires=[
-          'isomer>=1.0.0',
-          'captcha>=0.2.4',
-          'validate_email>=1.3'
-      ],
-      entry_points="""[isomer.components]
+    dependency_links=[
+    ],
+    install_requires=[
+        'isomer>=1.0.0',
+        'captcha>=0.2.4',
+        'validate_email>=1.3',
+        'isomer-mail>=0.0.1'
+    ],
+    entry_points="""[isomer.components]
     enrol=isomer.enrol.enrolmanager:EnrolManager
     [isomer.schemata]
     enrollment=isomer.enrol.enrollment:Enrollment
     """,
-      test_suite="tests.main.main",
-      )
+    test_suite="tests.main.main",
+)
