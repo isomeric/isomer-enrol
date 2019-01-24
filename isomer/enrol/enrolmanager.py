@@ -337,7 +337,7 @@ the friendly robot of {{node_name}}
 
         if status == 'Accepted' and enrollment.method == 'Enrolled':
             self._create_user(enrollment.name, enrollment.password, enrollment.email, 'Invited', event.client.uuid)
-            self._send_acceptance(enrollment, None, event)
+            self._send_acceptance(enrollment, event)
 
         packet = {
             'component': 'isomer.enrol.enrolmanager',
@@ -468,7 +468,7 @@ the friendly robot of {{node_name}}
                         password = std_human_uid().replace(" ", '')
 
                         self._create_user(enrollment.name, password, enrollment.email, enrollment.method, uuid)
-                        self._send_acceptance(enrollment, password, event)
+                        self._send_acceptance(enrollment, event, password)
                     elif enrollment.method == 'Enrolled' and self.config.auto_accept_enrolled:
                         enrollment.status = 'Accepted'
                         data = 'Your account is now activated.'
@@ -477,7 +477,7 @@ the friendly robot of {{node_name}}
                                           uuid)
 
                         # TODO: Evaluate if sending an acceptance mail makes sense
-                        # self._send_acceptance(enrollment, "", event)
+                        # self._send_acceptance(enrollment, event)
                     else:
                         enrollment.status = 'Pending'
                         data = 'Someone has to confirm your enrollment ' \
@@ -732,12 +732,12 @@ the friendly robot of {{node_name}}
 
         self._send_mail(self.config.invitation_subject, self.config.invitation_mail, enrollment, event)
 
-    def _send_acceptance(self, enrollment, password, event):
+    def _send_acceptance(self, enrollment, event, password=None):
         """Send an acceptance mail to an open enrolment"""
 
         self.log('Sending acceptance status mail to user')
 
-        if password is not "":
+        if password is not None:
             password_hint = '\n\nPS: Your new password is ' + password + ' - please change it after your first login!'
 
             acceptance_text = self.config.acceptance_mail + password_hint
