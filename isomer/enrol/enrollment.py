@@ -3,7 +3,7 @@
 
 # Isomer - The distributed application framework
 # ==============================================
-# Copyright (C) 2011-2018 Heiko 'riot' Weinen <riot@c-base.org> and others.
+# Copyright (C) 2011-2019 Heiko 'riot' Weinen <riot@c-base.org> and others.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -41,8 +41,10 @@ from isomer.schemata.base import base_object
 EnrollmentSchema = base_object('enrollment')
 
 EnrollmentSchema['properties'].update({
-    'email': {'type': 'string', 'title': 'Address',
-              'description': 'Enrollment email address'},
+    'email': {
+        'type': 'string', 'title': 'Address',
+        'description': 'Enrollment email address'
+    },
     'status': {
         'type': 'string',
         'enum': [
@@ -51,9 +53,11 @@ EnrollmentSchema['properties'].update({
         'title': 'Enrollment description',
         'description': 'Enrollment description'
     },
-    'password': {'type': 'string', 'title': 'Password',
-                 'description': 'Optional, user pre-assigned password',
-                 'default': ''},
+    'password': {
+        'type': 'string', 'title': 'Password',
+        'description': 'Optional, user pre-assigned password',
+        'default': ''
+    },
     'method': {
         'type': 'string',
         'enum': [
@@ -63,9 +67,11 @@ EnrollmentSchema['properties'].update({
     'changes': {
         'type': 'object'
     },
-    'timestamp': {'type': 'string', 'format': 'datetimepicker',
-                  'title': 'Last change',
-                  'description': 'Latest change date of Enrollment'}
+    'timestamp': {
+        'type': 'string', 'format': 'datetimepicker',
+        'title': 'Last change',
+        'description': 'Latest change date of Enrollment'
+    }
 })
 
 EnrollmentForm = [

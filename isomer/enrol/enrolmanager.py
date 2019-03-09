@@ -3,7 +3,7 @@
 
 # Isomer - The distributed application framework
 # ==============================================
-# Copyright (C) 2011-2018 Heiko 'riot' Weinen <riot@c-base.org> and others.
+# Copyright (C) 2011-2019 Heiko 'riot' Weinen <riot@c-base.org> and others.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -434,7 +434,7 @@ the friendly robot of {{node_name}}
             self._fail(event, _('Your username is not long enough.', event))
             return
         elif (objectmodels['user'].count({'name': username}) > 0) or \
-            (objectmodels['enrollment'].count({'name': username}) > 0):
+                (objectmodels['enrollment'].count({'name': username}) > 0):
             self._fail(event, _('The username you supplied is not available.', event))
             return
 
