@@ -46,7 +46,7 @@ class PasswordChange {
 
         let self = this;
 
-        this.socket.listen('isomer.enrol.enrolmanager', function(msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function (msg) {
             console.log('[PASSWORD]', msg);
             if (msg.action === 'changepassword') {
                 if (msg.data === true) {

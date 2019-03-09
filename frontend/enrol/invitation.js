@@ -32,27 +32,27 @@
  * Controller of the isomerFrontendApp
  */
 class Accept {
-    
+
     constructor(scope, rootScope, socket, $stateParams, $timeout) {
         this.scope = scope;
         this.rootscope = rootScope;
         this.socket = socket;
         this.stateParams = $stateParams;
         this.timeout = $timeout;
-        
+
         this.uuid = null;
         this.success = false;
         this.error = false;
         this.status = false;
     }
-    
+
     $onInit() {
         if (typeof this.stateParams.uuid !== 'undefined') {
             this.uuid = this.stateParams.uuid;
         }
-        
+
         console.log('[INVITATION] UUID:', this.uuid);
-        
+
         let packet = {
             component: 'isomer.enrol.enrolmanager',
             action: 'accept',
@@ -64,7 +64,7 @@ class Accept {
                 self.socket.send(packet);
             }, 3000);
         });
-        this.socket.listen('isomer.enrol.enrolmanager', function(msg) {
+        this.socket.listen('isomer.enrol.enrolmanager', function (msg) {
             console.log('Message!', msg);
             if (msg.action === 'accept') {
                 let data = msg.data[true];

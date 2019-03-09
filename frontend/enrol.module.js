@@ -27,7 +27,7 @@ import './enrol/enrolmanagement.scss';
 import angular from 'angular';
 import uirouter from 'angular-ui-router';
 
-import { routing } from './enrol.config.js';
+import {routing} from './enrol.config.js';
 
 import enrolcomponent from './enrol/enrol';
 import enroltemplate from './enrol/enrol.tpl.html';

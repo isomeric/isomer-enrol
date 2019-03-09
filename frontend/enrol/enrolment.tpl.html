@@ -34,7 +34,8 @@
     </div>
 
     <div ng-show="$ctrl.user.signedin && ($ctrl.registration_open === true)">
-        <div><span translate>You're already logged in. Please </span><a ng-click="$ctrl.logout()" translate>log out</a><span translate> to enrol another account.</span></div>
+        <div><span translate>You're already logged in. Please </span><a ng-click="$ctrl.logout()" translate>log
+            out</a><span translate> to enrol another account.</span></div>
     </div>
 
     <div ng-show="$ctrl.success === true">
@@ -48,7 +49,8 @@
                 If you do not receive this mail, contact an administrator of this system.
             </div>
             <div ng-show="$ctrl.enrolled">
-                <span translate>You can now </span><a ng-click="$ctrl.state.go('app.menu'); $ctrl.user.showlogin()" translate>login to this node.</a>
+                <span translate>You can now </span><a ng-click="$ctrl.state.go('app.menu'); $ctrl.user.showlogin()"
+                                                      translate>login to this node.</a>
                 <span translate>If you didn't specify a password, there should be a temporary one in your activation confirmation mail.</span>
             </div>
         </div>
@@ -113,8 +115,12 @@
                     <input id="mail" name="mail" type="email" ng-model="$ctrl.mail" class="form-control" required>
                 </div>
                 <div ng-show="enrolment.$submitted || enrolment.mail.$touched">
-                    <div class="help-block" ng-show="enrolment.mail.$error.required" translate>E-Mail address is required</div>
-                    <div class="help-block" ng-show="enrolment.mail.$error.email" translate>E-Mail address is not valid</div>
+                    <div class="help-block" ng-show="enrolment.mail.$error.required" translate>E-Mail address is
+                        required
+                    </div>
+                    <div class="help-block" ng-show="enrolment.mail.$error.email" translate>E-Mail address is not
+                        valid
+                    </div>
                 </div>
             </div>
 

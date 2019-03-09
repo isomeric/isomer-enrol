@@ -44,7 +44,7 @@ class AccountReset {
 
     request_reset() {
         console.log('Transmitting reset request');
-        
+
         let packet = {
             component: 'isomer.enrol.enrolmanager',
             action: 'request_reset',

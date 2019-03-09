@@ -90,7 +90,7 @@ class Enrol {
         });
 
         if (!user.signedin) {
-            this.timeout(function() {
+            this.timeout(function () {
                 self.get_registration_status();
             }, 2000);
         }

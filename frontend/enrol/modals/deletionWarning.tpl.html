@@ -26,7 +26,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" ng-show="title">
-                <button type="button" class="close" aria-label="Close" ng-click="$ctrl.action_users = null; $ctrl.close(); $hide()">
+                <button type="button" class="close" aria-label="Close"
+                        ng-click="$ctrl.action_users = null; $ctrl.close(); $hide()">
                     <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" ng-bind="title"></h4>
             </div>
@@ -36,10 +37,12 @@
                         <h2>This cannot be undone!</h2>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-lg btn-default" ng-click="$ctrl.action_users = null; $ctrl.close(); $hide()">
-                             <span class="fa fa-times"></span>Cancel
+                        <button type="button" class="btn btn-lg btn-default"
+                                ng-click="$ctrl.action_users = null; $ctrl.close(); $hide()">
+                            <span class="fa fa-times"></span>Cancel
                         </button>
-                        <button type="submit" class="btn btn-lg btn-danger" ng-click="$ctrl.confirm_deletion(); $hide()">
+                        <button type="submit" class="btn btn-lg btn-danger"
+                                ng-click="$ctrl.confirm_deletion(); $hide()">
                             <span class="fa fa-trash-o"></span>
                             Delete {{$ctrl.deletion_candidates.length}}
                             user{{$ctrl.deletion_candidates.length > 1 ? 's' : ''}}

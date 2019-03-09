@@ -231,6 +231,7 @@ class Enrol {
 
     toggle_users() {
         let self = this;
+
         function filtered(user) {
             if (self.filter_string === null) return true;
 
@@ -238,7 +239,7 @@ class Enrol {
                 mail = user.mail;
 
             return (typeof name !== 'undefined' && name.indexOf(self.filter_string) >= 0) ||
-                   (typeof mail !== 'undefined' && user.mail.indexOf(self.filter_string) >= 0);
+                (typeof mail !== 'undefined' && user.mail.indexOf(self.filter_string) >= 0);
         }
 
         for (let uuid of Object.keys(this.users)) {
