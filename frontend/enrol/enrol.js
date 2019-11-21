@@ -63,6 +63,9 @@ class Enrol {
         this.enrollment_badge = false;
         this.user_badge = false;
 
+        this.create = {};
+        this.reset_create();
+
         let self = this;
 
         this.getter_timeout = null;
@@ -100,6 +103,9 @@ class Enrol {
                     self.enrollments[result.uuid] = result;
                 }
                 self.update_enrollment_badge();
+            } else if (msg.action === 'create') {
+                let status = msg.data[0] ? 'success' : 'danger';
+                self.notification.add(status, 'Enrol', msg.data[1], 3);
             } else if (['addrole', 'delrole', 'delete', 'toggle'].indexOf(msg.action) >= 0) {
                 console.log('[ENROL] Action');
                 if (msg.action === 'delete') {
@@ -158,6 +164,15 @@ class Enrol {
                 self.update_enrollment_badge();
             }
         })
+    }
+
+    reset_create() {
+        this.create = {
+            name: '',
+            mail: '',
+            password: '',
+            password_verify: ''
+        };
     }
 
     get_qr(uuid) {
@@ -340,6 +355,20 @@ class Enrol {
             }
         };
         this.socket.send(request);
+    }
+
+    create_user() {
+        if (this.create.password !== this.create.password_verify) {
+            this.notification.add('warning', 'Enrol', 'Passwords do not match, please fix.', 3);
+            return
+        }
+        let request = {
+            component: 'isomer.enrol.enrolmanager',
+            action: 'create',
+            data: this.create
+        };
+        this.socket.send(request);
+        self.notification.add('info', 'Enrol', 'Requested user creation', 3);
     }
 
     update_enrollment_badge() {
