@@ -30,23 +30,20 @@ Module: EnrolManager
 
 """
 
-from socket import timeout
 from base64 import b64encode
 from time import time
 from captcha.image import ImageCaptcha
 from validate_email import validate_email
 from circuits import Timer, Event
+from pystache import render
 
 from isomer.component import ConfigurableComponent, handler
 from isomer.events.system import authorized_event, anonymous_event
 from isomer.events.client import send
-from isomer.database import objectmodels
+from isomer.database import objectmodels, ValidationError
 from isomer.logger import warn, debug, verbose, error, hilight, isolog
 from isomer.misc import std_uuid, std_now, std_hash, std_salt, i18n as _, std_human_uid
-from pystache import render
-from email.mime.text import MIMEText
-from smtplib import SMTP, SMTP_SSL
-
+from isomer.ui.auth import minimum_password_length, minimum_username_length
 from isomer.mail import send_mail
 
 
@@ -74,8 +71,12 @@ class toggle(authorized_event):
     roles = ['admin']
 
 
+class create(authorized_event):
+    roles = ['admin']
+
+
 class changepassword(authorized_event):
-    pass
+    roles = ['crew']
 
 
 class accept(anonymous_event):
@@ -261,7 +262,8 @@ the friendly robot of {{node_name}}
         self._setup()
 
     def _setup(self):
-        self.image_captcha = ImageCaptcha(fonts=['/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf'])
+        self.image_captcha = ImageCaptcha(
+            fonts=['/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf'])
 
         self.captchas = {}
 
@@ -271,7 +273,9 @@ the friendly robot of {{node_name}}
             salt = systemconfig.salt.encode('ascii')
             self.log('Using active systemconfig salt')
         except (KeyError, AttributeError):
-            self.log('No system salt found! Check your configuration. This can happen upon first start.', lvl=error)
+            self.log(
+                'No system salt found! Check your configuration. This can happen upon first start.',
+                lvl=error)
             self.unregister()
             return
 
@@ -306,6 +310,49 @@ the friendly robot of {{node_name}}
         }
         self.fireEvent(send(event.client.uuid, success_msg))
 
+    @handler(create)
+    def create(self, event):
+        """An admin user requests to create a new user"""
+
+        uuid = std_uuid()
+        name = event.data['name']
+        mail = event.data['mail']
+        password = event.data['password']
+        password_verify = event.data['password_verify']
+
+        if password != password_verify:
+            self._fail(event, 'Passwords do not match')
+            return
+
+        if len(password) < minimum_password_length:
+            self._fail(event, msg="Password too short")
+            return
+
+        if len(name) < minimum_username_length:
+            self._fail(event, msg="Username too short")
+            return
+
+        passhash = std_hash(password, self.salt)
+
+        existing = objectmodels['user'].find_one({'name': name})
+        if existing is not None:
+            self._fail(event, msg='User already exists')
+            return
+
+        new_user = objectmodels['user']({
+            'uuid': uuid,
+            'name': name,
+            'passhash': passhash,
+            'mail': mail
+        })
+
+        try:
+            new_user.save()
+            self._acknowledge(event)
+        except ValidationError as e:
+            self.log("Tried to create invalid user:", e, exc=True, lvl=error)
+            self._fail(event, msg="Invalid user data specified")
+
     @handler(change)
     def change(self, event):
         """An admin user requests a change to an enrolment"""
@@ -336,7 +383,8 @@ the friendly robot of {{node_name}}
             reply = {True: enrollment.serializablefields()}
 
         if status == 'Accepted' and enrollment.method == 'Enrolled':
-            self._create_user(enrollment.name, enrollment.password, enrollment.email, 'Invited', event.client.uuid)
+            self._create_user(enrollment.name, enrollment.password, enrollment.email,
+                              'Invited', event.client.uuid)
             self._send_acceptance(enrollment, event)
 
         packet = {
@@ -377,7 +425,8 @@ the friendly robot of {{node_name}}
                 'data': False
             }
             self.fireEvent(send(event.client.uuid, packet))
-            self.log('User tried to change password without supplying old one', lvl=warn)
+            self.log('User tried to change password without supplying old one',
+                     lvl=warn)
 
     @handler(invite)
     def invite(self, event):
@@ -403,7 +452,8 @@ the friendly robot of {{node_name}}
 
         uuid = event.client.uuid
 
-        if uuid in self.captchas and event.data.get('captcha', None) == self.captchas[uuid]['text']:
+        if uuid in self.captchas and event.data.get('captcha', None) == \
+                self.captchas[uuid]['text']:
             self.log('Captcha solved!')
         else:
             self.log('Captcha failed!')
@@ -467,13 +517,15 @@ the friendly robot of {{node_name}}
                                'Please change your password immediately after logging in'
                         password = std_human_uid().replace(" ", '')
 
-                        self._create_user(enrollment.name, password, enrollment.email, enrollment.method, uuid)
+                        self._create_user(enrollment.name, password, enrollment.email,
+                                          enrollment.method, uuid)
                         self._send_acceptance(enrollment, event, password)
                     elif enrollment.method == 'Enrolled' and self.config.auto_accept_enrolled:
                         enrollment.status = 'Accepted'
                         data = 'Your account is now activated.'
 
-                        self._create_user(enrollment.name, enrollment.password, enrollment.email, enrollment.method,
+                        self._create_user(enrollment.name, enrollment.password,
+                                          enrollment.email, enrollment.method,
                                           uuid)
 
                         # TODO: Evaluate if sending an acceptance mail makes sense
@@ -554,7 +606,8 @@ the friendly robot of {{node_name}}
         profile_object = objectmodels['profile'].find_one({'owner': event.data})
 
         user_object.delete()
-        profile_object.delete()
+        if profile_object is not None:
+            profile_object.delete()
 
         self.log('User deleted:', user_object.name)
         self._acknowledge(event, event.data)
@@ -629,7 +682,8 @@ the friendly robot of {{node_name}}
         # self.image_captcha.write(text, '/tmp/captcha.png')
         self.captchas[event.client.uuid] = captcha
 
-        Timer(3, Event.create('captcha_transmit', captcha, event.client.uuid)).register(self)
+        Timer(3, Event.create('captcha_transmit', captcha, event.client.uuid)).register(
+            self)
 
     def captcha_transmit(self, captcha, uuid):
         """Delayed transmission of a requested captcha"""
@@ -730,7 +784,8 @@ the friendly robot of {{node_name}}
 
         self.log('Sending enrollment status mail to user')
 
-        self._send_mail(self.config.invitation_subject, self.config.invitation_mail, enrollment, event)
+        self._send_mail(self.config.invitation_subject, self.config.invitation_mail,
+                        enrollment, event)
 
     def _send_acceptance(self, enrollment, event, password=None):
         """Send an acceptance mail to an open enrolment"""
@@ -744,7 +799,8 @@ the friendly robot of {{node_name}}
         else:
             acceptance_text = self.config.acceptance_mail
 
-        self._send_mail(self.config.acceptance_subject, acceptance_text, enrollment, event)
+        self._send_mail(self.config.acceptance_subject, acceptance_text, enrollment,
+                        event)
 
     def _send_mail(self, subject, template, enrollment, event):
         """Connect to mail server and send actual email"""
