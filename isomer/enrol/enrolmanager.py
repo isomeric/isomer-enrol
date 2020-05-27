@@ -113,50 +113,6 @@ class EnrolManager(ConfigurableComponent):
             'description': 'Generally toggle email sending (for Debugging)',
             'default': True
         },
-        'mail_server': {
-            'type': 'string',
-            'title': 'Mail server',
-            'description': 'Mail server to use for sending invitations and '
-                           'password resets',
-            'default': 'localhost'
-        },
-        'mail_server_port': {
-            'type': 'integer',
-            'title': 'Mail server port',
-            'description': 'Mail server port to connect to',
-            'default': 25
-        },
-        'mail_ssl': {
-            'type': 'boolean',
-            'title': 'Use SSL',
-            'description': 'Use SSL to secure the mail server connection',
-            'default': True
-        },
-        'mail_tls': {
-            'type': 'boolean',
-            'title': 'Use TLS',
-            'description': 'Use TLS to secure the mail server connection',
-            'default': False
-        },
-        'mail_from': {
-            'type': 'string',
-            'title': 'Mail from address',
-            'description': 'From mail address to send to new invitees',
-            # TODO: Get a better default here:
-            'default': 'enrol@{{hostname}}'
-        },
-        'mail_username': {
-            'type': 'string',
-            'title': 'SMTP Username',
-            'default': ''
-        },
-        'mail_password': {
-            'type': 'string',
-            'title': 'SMTP Password',
-            'x-schema-form': {
-                'type': 'password'
-            }
-        },
         'allow_registration': {
             'type': 'boolean',
             'title': 'Open registration',
@@ -258,6 +214,9 @@ the friendly robot of {{node_name}}
         """Reload the current configuration and set up everything depending on it"""
 
         super(EnrolManager, self).reload_configuration(event)
+        if event.target != self.uniquename:
+            return
+
         self.log('Reloaded configuration.')
         self._setup()
 
