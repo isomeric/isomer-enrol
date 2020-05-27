@@ -47,6 +47,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython'
     ],
     packages=find_packages(),
+    package_data={'isomer-enrol': ['../docs/*', '../frontend/*']},
     include_package_data=True,
     long_description="""Isomer - Enrol
 ==============
@@ -70,3 +71,5 @@ This software package is a plugin module for Isomer.
     """,
     test_suite="tests.main.main",
 )
+
+
