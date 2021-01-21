@@ -32,6 +32,8 @@ Module: EnrolManager
 
 from base64 import b64encode
 from time import time
+from string import ascii_letters, digits
+from random import choice
 from captcha.image import ImageCaptcha
 from validate_email import validate_email
 from circuits import Timer, Event
@@ -42,7 +44,8 @@ from isomer.events.system import authorized_event, anonymous_event
 from isomer.events.client import send
 from isomer.database import objectmodels, ValidationError
 from isomer.logger import warn, debug, verbose, error, hilight, isolog
-from isomer.misc import std_uuid, std_now, std_hash, std_salt, i18n as _, std_human_uid
+from isomer.misc import i18n as _
+from isomer.misc.std import std_hash, std_now, std_uuid, std_human_uid
 from isomer.ui.auth import minimum_password_length, minimum_username_length
 from isomer.mail import send_mail
 
@@ -627,10 +630,16 @@ the friendly robot of {{node_name}}
         self.log('Toggled user:', user_object.name, ', activated:', status)
         self._acknowledge(event)
 
+    @staticmethod
+    def __generate_captcha_string():
+        """Generates a randomized collection of 6 letters and digits"""
+
+        return "".join(choice(ascii_letters + digits) for i in range(6))
+
     def _generate_captcha(self, event):
         self.log('Generating requested captcha')
 
-        text = std_salt(length=6, lowercase=False)
+        text = self.__generate_captcha_string()
         now = time()
 
         captcha = {
