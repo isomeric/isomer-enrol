@@ -21,11 +21,11 @@
 __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name="isomer-enrol",
-    version="0.0.3",
+    version="0.0.4",
     description="isomer-enrol",
     author="Isomer Community",
     author_email="riot@c-base.org",
@@ -46,7 +46,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: CPython'
     ],
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     package_data={'isomer-enrol': ['../docs/*', '../frontend/*']},
     include_package_data=True,
     long_description="""Isomer - Enrol
@@ -59,10 +59,10 @@ This software package is a plugin module for Isomer.
     dependency_links=[
     ],
     install_requires=[
-        'isomer>=1.0',
+        'isomer>=1.1.4',
         'captcha>=0.2.4',
         'validate_email>=1.3',
-        'isomer-mail>=0.0.1'
+        'isomer-mail>=0.0.2'
     ],
     entry_points="""[isomer.components]
     enrol=isomer.enrol.enrolmanager:EnrolManager
